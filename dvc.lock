@@ -68,3 +68,44 @@ stages:
       hash: md5
       md5: 28ff59fc7bb06023465e3cb2fdb24f81
       size: 7275
+  train:
+    cmd: python src/models/train.py
+    deps:
+    - path: data/processed/train_trans.csv
+      hash: md5
+      md5: 88cd199b61fa2f9e502bcc2c4901865c
+      size: 4302565
+    - path: src/models/train.py
+      hash: md5
+      md5: 23836e8b11b6df7722dd31dc40a3fe58
+      size: 3670
+    params:
+      params.yaml:
+        Train.LightGBM:
+          learning_rate: 0.4634183035475242
+          max_depth: 19
+          min_child_weight: 14
+          min_split_gain: 1.0050226994104905
+          n_estimators: 142
+          reg_lambda: 7.743851432894324
+          subsample: 0.7628386779555664
+        Train.Random_Forest:
+          max_depth: 14
+          max_features:
+          max_samples: 0.6884129569843086
+          min_samples_leaf: 3
+          min_samples_split: 5
+          n_estimators: 297
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 61c816fb5d9570bdb9a5b1b38a971d1f
+      size: 96533224
+    - path: models/power_transformer.joblib
+      hash: md5
+      md5: bc25d2192b8c7784d40c2ff5234f5993
+      size: 805
+    - path: models/stacking_regressor.joblib
+      hash: md5
+      md5: e9a8af4f88617db71ecbf03a079a3a53
+      size: 96519850
