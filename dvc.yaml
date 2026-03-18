@@ -8,3 +8,18 @@ stages:
 
     outs:
     - data/cleaned/cleaned_data.csv
+
+  data_prepraration:
+    cmd: python src/data/data-preparation.py
+
+    params: 
+    - Data_Preparation.test_size
+    - Data_Preparation.random_state
+
+    deps:
+    - data/cleaned/cleaned_data.csv
+    - src/data/data-preparation.py
+
+    outs:
+    - data/interim/train_subset.csv
+    - data/interim/test_subset.csv
