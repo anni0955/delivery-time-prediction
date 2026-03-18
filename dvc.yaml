@@ -1,0 +1,10 @@
+stages:
+  data_cleaning:
+    cmd: python src/data/data-cleaning.py
+    
+    deps:
+    - data/raw/train.csv
+    - src/data/data-cleaning.py
+
+    outs:
+    - data/cleaned/cleaned_data.csv
