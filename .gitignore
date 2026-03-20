@@ -88,3 +88,4 @@ venv/
 
 # Mypy cache
 .mypy_cache/
+/run_information.json

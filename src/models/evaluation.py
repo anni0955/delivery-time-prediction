@@ -7,10 +7,11 @@ import mlflow
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.compose import TransformedTargetRegressor
+import json 
 
 
 dagshub.init(repo_owner='anni0955',
-             repo_name='delivery_time_prediction',
+             repo_name='delivery-time-prediction',
              mlflow=True)
 
 mlflow.set_tracking_uri('https://dagshub.com/anni0955/delivery-time-prediction.mlflow')
@@ -42,7 +43,7 @@ def load_data(data_path: Path) ->pd.DataFrame:
 
 
 def make_x_and_y(data: pd.DataFrame, target_col: str):
-    x = data.drop(columns=target_col)
+    x = data.drop(columns=[target_col])
     y = data[target_col]
 
     return x, y
@@ -51,6 +52,18 @@ def make_x_and_y(data: pd.DataFrame, target_col: str):
 def load_model(model_path: Path):
     model = joblib.load(model_path)
     return model
+
+
+def save_model_info(save_json_path, run_id, model_uri, model_name):
+    info_dict = {
+        'run_id': run_id,
+        'model_uri': model_uri,
+        'model_name': model_name
+    }
+
+    with open(save_json_path, 'w') as f:
+        json.dump(info_dict, f, indent=4)
+
 
 
 if __name__ == '__main__':
@@ -90,7 +103,9 @@ if __name__ == '__main__':
 
     mean_cv_score = -(cv_scores).mean()
 
-    with mlflow.start_run():
+    model_artifact_path = 'delivery_time_pred_model'
+
+    with mlflow.start_run() as run:
         mlflow.set_tag('model', 'Delivery Time Regressor')
 
         mlflow.log_params(model.get_params())
@@ -112,8 +127,20 @@ if __name__ == '__main__':
         model_signature = mlflow.models.infer_signature(model_input=x_train.sample(20, random_state=42), 
                                                         model_output=model.predict(x_train.sample(20, random_state=42)))
         
-        mlflow.sklearn.log_model(model, 'model', signature=model_signature)
+        model_info = mlflow.sklearn.log_model(sk_model=model, name=model_artifact_path, signature=model_signature)
 
-        logger.info('MLflow logging complete and model logged')
+        mlflow.log_artifact(str(root_path / 'models' / 'stacking_regressor.joblib'))
+        mlflow.log_artifact(str(root_path / 'models' / 'power_transformer.joblib'))
+        mlflow.log_artifact(str(root_path / 'models' / 'preprocessor.joblib'))
 
+        artifact_uri = mlflow.get_artifact_uri()
 
+        logger.info(f'MLflow logging complete and model logged. Model URI: {model_info.model_uri}')
+
+        run_id = run.info.run_id 
+        model_uri = model_info.model_uri
+
+    save_json_path = root_path / 'run_information.json'
+    save_model_info(save_json_path=save_json_path, run_id=run_id, model_uri=model_uri, model_name=model_artifact_path)
+
+    logger.info('Model information saved successfully')
