@@ -14,8 +14,8 @@ handler.setLevel(logging.INFO)
 
 logger.addHandler(handler)
 
-fomatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(fomatter)
+formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 
 
 dagshub.init(repo_owner='anni0955', repo_name='delivery-time-prediction', mlflow=True)
@@ -47,6 +47,3 @@ if __name__ == '__main__':
     client.set_registered_model_alias(name=registered_model_name, alias='best', version=registered_model_version)
 
     logger.info('Alias best assigned successfully')
-
-
-    

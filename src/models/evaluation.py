@@ -6,7 +6,6 @@ import dagshub
 import mlflow
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import r2_score, mean_absolute_error
-from sklearn.compose import TransformedTargetRegressor
 import json 
 
 
@@ -38,7 +37,7 @@ def load_data(data_path: Path) ->pd.DataFrame:
         df = pd.read_csv(data_path)
         return df
     except FileNotFoundError:
-        logger.log('File to loag dies not exist')
+        logger.error('File to loag dies not exist')
         raise
 
 
@@ -132,8 +131,6 @@ if __name__ == '__main__':
         mlflow.log_artifact(str(root_path / 'models' / 'stacking_regressor.joblib'))
         mlflow.log_artifact(str(root_path / 'models' / 'power_transformer.joblib'))
         mlflow.log_artifact(str(root_path / 'models' / 'preprocessor.joblib'))
-
-        artifact_uri = mlflow.get_artifact_uri()
 
         logger.info(f'MLflow logging complete and model logged. Model URI: {model_info.model_uri}')
 

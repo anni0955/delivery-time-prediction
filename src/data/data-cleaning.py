@@ -7,7 +7,7 @@ logger = logging.getLogger('data-cleaning')
 logger.setLevel(logging.INFO)
 
 handler = logging.StreamHandler()
-logger.setLevel(logging.INFO)
+handler.setLevel(logging.INFO)
 
 logger.addHandler(handler)
 
@@ -24,11 +24,10 @@ cols_to_drop = ['rider_id', 'restaurant_latitude',
 def load_data(data_path: Path) ->pd.DataFrame:
     try:
         df = pd.read_csv(data_path)
+        return df
     
     except FileNotFoundError:
-        logger.error('The file to load does not exist')
-
-    return df 
+        logger.error('The file to load does not exist')     
 
 
 
@@ -152,8 +151,6 @@ def extract_datetime_features(ser: pd.Series) -> pd.DataFrame:
 
 
 def time_of_day(ser: pd.Series):
-    time_col = pd.to_datetime(ser, format='mixed').dt.hour
-
     return (
         pd.cut(ser, bins=[0, 6, 12, 17, 20, 24], right=True,
                labels=['after_midnight', 'morning', 'afternoon', 'evening', 'night'])
@@ -192,8 +189,10 @@ def create_distance_type(data: pd.DataFrame) ->pd.DataFrame:
     return(
         data
         .assign(
-            distance_type = pd.cut(data['distance'], bins=[0, 5, 10, 15, 21],
-                                   right=False, labels=['short', 'medium', 'long', 'very_long'])
+            distance_type = pd.cut(
+                data['distance'], bins=[0, 5, 10, 15, 21],
+                right=False, labels=['short', 'medium', 'long', 'very_long']
+            )
         )
     )
 

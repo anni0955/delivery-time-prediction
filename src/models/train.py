@@ -48,11 +48,6 @@ def save_model(model, save_dir: Path, model_name: str):
 
     joblib.dump(value=model, filename=save_location)
 
-# def save_transformer(transformer, save_dir: Path, transformer_name: str):
-#     save_location = save_dir / transformer_name
-    
-#     joblib.dump(value=transformer, filename=save_location)
-    
 def make_x_and_y(data: pd.DataFrame, target_col: str):
     x = data.drop(columns=target_col)
     y = data[target_col]
@@ -113,7 +108,7 @@ if __name__ == '__main__':
 
     model_filename = 'model.joblib'
     model_save_dir = root_path / 'models' 
-    model_save_dir.mkdir(exist_ok=True)
+    model_save_dir.mkdir(exist_ok=True, parents=True)
 
     stacking_model = model.regressor_
     transformer = model.transformer_
@@ -128,7 +123,3 @@ if __name__ == '__main__':
     transformer_filename = 'power_transformer.joblib'
     save_model(transformer, model_save_dir, transformer_filename)
     logger.info('power transformer saved successfully')
-    
-
-
-

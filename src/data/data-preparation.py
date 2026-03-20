@@ -4,8 +4,6 @@ import yaml
 import logging
 from pathlib import Path
 
-TARGET = 'time_taken'
-
 logger = logging.getLogger('data_preparation')
 logger.setLevel(logging.INFO)
 
@@ -22,11 +20,11 @@ handler.setFormatter(formatter)
 def load_data(datapath: Path) -> pd.DataFrame:
     try:
         df = pd.read_csv(datapath)
+        return df 
     
     except FileNotFoundError:
         logger.error('The file to load does not exist')
-
-    return df 
+ 
 
 
 
@@ -40,9 +38,9 @@ def split_data(data: pd.DataFrame, test_size: float, random_state: int):
 
 def read_params(file_path):
     with open(file_path, 'r') as f:
-        parmas_file = yaml.safe_load(f)
+        params_file = yaml.safe_load(f)
 
-    return parmas_file
+    return params_file
 
 
 
@@ -83,4 +81,4 @@ if __name__ == '__main__':
 
     for filename, path, data in zip(filename_list, data_paths, data_subsets):
         save_data(data=data, save_path=path)
-        logger.info(f'{filename.replace('.csv', '')} data saved to location')
+        logger.info(f'{filename.replace(".csv", "")} data saved to location')

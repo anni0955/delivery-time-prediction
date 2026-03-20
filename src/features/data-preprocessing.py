@@ -31,9 +31,9 @@ nominal_cat_cols = [
     'city_type', 'is_weekend',
     'order_time_of_day' 
 ]
-ordianl_cat_cols = ['traffic', 'distance_type']
+ordinal_cat_cols = ['traffic', 'distance_type']
 
-target_col = 'time_taken'
+TARGET = 'time_taken'
 
 traffic_order = ['low', 'medium', 'high', 'jam']
 distance_type_order = ['short', 'medium', 'long', 'very_long']
@@ -42,10 +42,11 @@ distance_type_order = ['short', 'medium', 'long', 'very_long']
 def load_data(data_path: Path) -> pd.DataFrame:
     try:
         df = pd.read_csv(data_path)
-
+        return df 
+    
     except FileNotFoundError:
-        logger.log('file to load does not exist')
-    return df 
+        logger.error('file to load does not exist')
+    
 
 
 def drop_missing_val(data: pd.DataFrame) -> pd.DataFrame:
@@ -77,7 +78,7 @@ def save_data(data: pd.DataFrame, save_path: Path):
     data.to_csv(save_path, index=False)
 
 
-def make_x_anf_y(data: pd.DataFrame, target_column: str):
+def make_x_and_y(data: pd.DataFrame, target_col=TARGET):
     x = data.drop(columns=target_col)
     y = data[target_col]
     return x, y
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     test_data_path = root_path / 'data' / 'interim' / 'test_subset.csv'
 
     save_data_dir = root_path / 'data' / 'processed'
-    save_data_dir.mkdir(exist_ok=True)
+    save_data_dir.mkdir(exist_ok=True, parents=True)
 
     train_trans_filename = 'train_trans.csv'
     test_trans_filename = 'test_trans.csv'
@@ -105,7 +106,7 @@ if __name__ == '__main__':
         ('scaler', MinMaxScaler(), num_cols),
         ('nomial_encode', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), nominal_cat_cols),
         ('ordinal_encode', OrdinalEncoder(categories=[traffic_order, distance_type_order], encoded_missing_value=-999, 
-                                          handle_unknown='use_encoded_value', unknown_value=-1), ordianl_cat_cols)
+                                          handle_unknown='use_encoded_value', unknown_value=-1), ordinal_cat_cols)
     ], remainder='passthrough', n_jobs=-1, verbose_feature_names_out=False)
 
     train_df = drop_missing_val(load_data(train_data_path))
@@ -113,8 +114,8 @@ if __name__ == '__main__':
     test_df = drop_missing_val(load_data(test_data_path))
     logger.info('Test data loaded succesfully')
 
-    x_train, y_train = make_x_anf_y(train_df, target_col)
-    x_test, y_test = make_x_anf_y(test_df, target_col)
+    x_train, y_train = make_x_and_y(train_df)
+    x_test, y_test = make_x_and_y(test_df)
     logger.info('Data splitting completed')
 
     train_preprocessor(preprocessor, x_train)
@@ -137,17 +138,12 @@ if __name__ == '__main__':
 
     for filename, path, data in zip(filename_list, data_paths, data_subsets):
         save_data(data, path)
-        logger.info(f'{filename.replace('.csv', '')} data saved to location')
+        logger.info(f'{filename.replace(".csv", "")} data saved to location')
 
     transformer_filename = 'preprocessor.joblib'
     transformer_save_dir = root_path / 'models'
-    transformer_save_dir.mkdir(exist_ok=True)
+    transformer_save_dir.mkdir(exist_ok=True, parents=True)
 
     save_transformer(preprocessor, transformer_save_dir, transformer_filename)
 
     logger.info('Preprocessor saved to location')
-
-
-
-
-
