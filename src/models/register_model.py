@@ -44,6 +44,9 @@ if __name__ == '__main__':
     logger.info(f'The latest mode version in the model registry is {registered_model_version}')
 
     client = MlflowClient()
-    client.set_registered_model_alias(name=registered_model_name, alias='best', version=registered_model_version)
-
-    logger.info('Alias best assigned successfully')
+    client.transition_model_version_stage(
+        name=registered_model_name,
+        version=registered_model_version,
+        stage='Staging'
+    )
+    logger.info('Model pushed to staging stage')
