@@ -9,9 +9,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup Python 
-      uses: actiona/setup-python@v5
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.12.3'
+        python-version: '3.12'
         cache: 'pip'
 
     - name: Install Packages
