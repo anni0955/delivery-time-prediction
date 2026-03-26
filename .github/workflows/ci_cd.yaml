@@ -38,13 +38,13 @@ jobs:
       env: 
         DAGSHUB_USER_TOKEN: ${{secrets.DAGSHUB_TOKEN}}
       run: | 
-        pytest test/test_model_registry.py
+        python -m pytest test/test_model_registry.py
       
     - name: Test Model Performance
       env: 
         DAGSHUB_USER_TOKEN: ${{secrets.DAGSHUB_TOKEN}}
       run: |
-        pytest test/test_model_performance.py
+        python -m pytest test/test_model_performance.py
 
     - name: Promote Model
       if: success()
