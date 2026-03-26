@@ -1,6 +1,6 @@
 Data_Preparation:
   test_size: .2
-  random_state: 12
+  random_state: 32
 
 Train:
   Random_Forest: 
