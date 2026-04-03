@@ -52,19 +52,6 @@ def load_model(model_path: Path):
     model = joblib.load(model_path)
     return model
 
-
-def save_model_info(save_json_path, run_id, model_uri, model_name):
-    info_dict = {
-        'run_id': run_id,
-        'model_uri': model_uri,
-        'model_name': model_name
-    }
-
-    with open(save_json_path, 'w') as f:
-        json.dump(info_dict, f, indent=4)
-
-
-
 if __name__ == '__main__':
     root_path = Path(__file__).parent.parent.parent
 
@@ -126,18 +113,12 @@ if __name__ == '__main__':
         model_signature = mlflow.models.infer_signature(model_input=x_train.sample(20, random_state=42), 
                                                         model_output=model.predict(x_train.sample(20, random_state=42)))
         
-        model_info = mlflow.sklearn.log_model(sk_model=model, name=model_artifact_path, signature=model_signature)
+        mlflow.sklearn.log_model(sk_model=model, name='model', registered_model_name='delivery_time_prediction_model', signature=model_signature)
 
         mlflow.log_artifact(str(root_path / 'models' / 'stacking_regressor.joblib'))
         mlflow.log_artifact(str(root_path / 'models' / 'power_transformer.joblib'))
         mlflow.log_artifact(str(root_path / 'models' / 'preprocessor.joblib'))
 
-        logger.info(f'MLflow logging complete and model logged. Model URI: {model_info.model_uri}')
-
-        run_id = run.info.run_id 
-        model_uri = model_info.model_uri
-
-    save_json_path = root_path / 'run_information.json'
-    save_model_info(save_json_path=save_json_path, run_id=run_id, model_uri=model_uri, model_name=model_artifact_path)
+        logger.info(f'MLflow logging complete and model registered to mlflow')
 
     logger.info('Model information saved successfully')
