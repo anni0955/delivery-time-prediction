@@ -25,11 +25,10 @@ def load_transformer(model_path):
         return transformer
     
     
-model_name = load_model('run_information.json')['model_name']
-stage = 'Staging'
+MODEL_NAME = 'delivery_time_prediction_model'
+MODEL_ALIAS = 'dev'
 
-model_path = f'models:/{model_name}/{stage}'
-model = mlflow.sklearn.load_model(model_path)
+model = mlflow.pyfunc.load_model(model_uri=f'models:/{MODEL_NAME}@{MODEL_ALIAS}')
 
 root_path = Path(__file__).parent.parent
 
@@ -41,10 +40,12 @@ model_pipe = Pipeline([
     ('model', model)
 ])
 
-test_data_path = root_path / 'data' / 'interim' / 'test_subset.csv'
 
-@pytest.mark.parametrize(argnames='model_pipe, test_data_path, threshold_error', argvalues=[(model_pipe, test_data_path, 5)])
+@pytest.mark.parametrize(argnames='threshold_error', argvalues=[5])
 def test_model_performance(model_pipe, test_data_path, threshold_error):
+
+    test_data_path = root_path / 'data' / 'interim' / 'test_subset.csv' 
+    
     df = pd.read_csv(test_data_path)
     df.dropna(inplace=True)
 
@@ -57,4 +58,4 @@ def test_model_performance(model_pipe, test_data_path, threshold_error):
     assert mean_error <= threshold_error, f'the model does not pass the perfomance '
     print('avg_mae:', mean_error)
 
-    print(f'the {model_name} model passed the performance test')
+    print(f'the {MODEL_NAME}@{MODEL_ALIAS} model passed the performance test')
