@@ -9,26 +9,21 @@ dagshub.init(repo_owner='anni0955', repo_name='delivery-time-prediction', mlflow
 mlflow_tracking_uri = mlflow.set_tracking_uri('https://dagshub.com/anni0955/delivery-time-prediction.mlflow')
     
 MODEL_NAME = 'delivery_time_prediction_model'
-MODEL_ALIAS = 'dev'
 
 
 def test_load_model_from_registry():
     client = MlflowClient()
 
-    try:
-        model_version = client.get_model_version_by_alias(name=MODEL_NAME, alias=MODEL_ALIAS)
+    versions = client.search_model_versions(f"name='{MODEL_NAME}'")
 
-    except Exception:
-        pytest.fail(f'no model found with alias @{MODEL_ALIAS}')
+    assert len(versions) > 0, 'No models in registry'
 
-    version = model_version.version
+    latest_version = max([int(v.version) for v in versions])
 
-    assert version is not None, 'No version linked to alias'
-
-    model_uri = f'models/{MODEL_NAME}@{MODEL_ALIAS}'
+    model_uri = f'models:/{MODEL_NAME}/{latest_version}'
     model = mlflow.pyfunc.load_model(model_uri)
 
-    assert model is not None, 'Failed to load'
+    assert model is not None, 'failed to load model'
 
-    print(f'Model {MODEL_NAME}@{MODEL_ALIAS} v{version} loaded successfully')
+    print(f'model {MODEL_NAME} v{latest_version} loaded successfully')
 
