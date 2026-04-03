@@ -12,7 +12,7 @@ MODEL_NAME = 'delivery_time_prediction_model'
 MODEL_ALIAS = 'dev'
 
 
-def test_load_model_from_registry(model_name, stage):
+def test_load_model_from_registry():
     client = MlflowClient()
 
     try:

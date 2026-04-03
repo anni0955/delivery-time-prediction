@@ -12,12 +12,6 @@ from sklearn.metrics import mean_absolute_error
 dagshub.init(repo_owner='anni0955', repo_name='delivery-time-prediction', mlflow=True)
 
 mlflow_tracking_uri = mlflow.set_tracking_uri('https://dagshub.com/anni0955/delivery-time-prediction.mlflow')
-
-def load_model(model_path):
-    with open(model_path, 'r') as f:
-        run_info = json.load(f)
-
-        return run_info
     
 def load_transformer(model_path):
     with open(model_path, 'rb') as f:
