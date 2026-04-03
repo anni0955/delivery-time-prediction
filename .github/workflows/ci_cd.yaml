@@ -63,7 +63,7 @@ jobs:
 
     - name: Logging to ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-logging@v2
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build, tag and push image to ECR
       env:
