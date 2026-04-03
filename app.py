@@ -81,7 +81,7 @@ ordianl_cat_cols = [
 client = MlflowClient()
 
 model_name = load_model_information('run_information.json')['model_name']
-stage = 'Staging'
+stage = 'Production'
 latest_model_version = client.get_latest_versions(name=model_name, stages=[stage])
 
 model_path = f'models:/{model_name}/{stage}'
@@ -131,4 +131,5 @@ def do_prediction(data: Data):
     return predictions
 
 if __name__ == '__main__':
-    uvicorn.run(app='app:app')
+    uvicorn.run(app='app:app', host='0.0.0.0', port=8000)
+
