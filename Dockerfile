@@ -11,7 +11,6 @@ RUN pip install -r requirements-docker.txt
 COPY app.py ./
 COPY ./models/preprocessor.joblib ./models/preprocessor.joblib
 COPY ./scripts/data_clean_utils.py ./scripts/data_clean_utils.py
-COPY ./run_information.json ./
 
 EXPOSE 8000
 
